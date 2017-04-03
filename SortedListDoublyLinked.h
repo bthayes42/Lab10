@@ -1,5 +1,5 @@
-#if !defined (SLDL_H)
-#define SLDL_H
+#if !defined (SORTEDLISTDOUBLYLINKED_H)
+#define SORTEDLISTDOUBLYLINKED_H
 
 #include "ListDoublyLinkedIterator.h"
 #include "Text.h"
@@ -18,9 +18,6 @@ class SortedListDoublyLinked
       DoubleNode<T>* locateNodeRemove(String* sk);
       DoubleNode<T>* locateNodeAdd(T* item);
 
-      DoubleNode<T>* addDN(T* item);
-      T* remove(DoubleNode<T>* curr);
-
       DoubleNode<T>* findHead();
       DoubleNode<T>* findTail();
 
@@ -31,6 +28,9 @@ class SortedListDoublyLinked
       SortedListDoublyLinked(int (*comp_items) (T* item_1, T* item_2), int (*comp_keys) (String* key, T* item));
       ~SortedListDoublyLinked();
 
+	  DoubleNode<T>* addDN(T* item);
+      T* remove(DoubleNode<T>* curr);
+	  
       bool isEmpty();
       int size();
       void removeAll();
@@ -74,25 +74,36 @@ T* SortedListDoublyLinked<T>::remove(DoubleNode<T>* curr)
 
    //DO THIS (prev == NULL / after == NULL are special cases)
    //remember to set loc
+  
+   T* item = curr->getItem();
 
-   T* item;
+   
+   DoubleNode<T>* prev = curr->getPrev();
+   DoubleNode<T>* after = curr->getNext();
 
-   DoubleNode<T>* prev;
-   DoubleNode<T>* after;
+	 if (prev != NULL && after != NULL) 
+	 {
 
-		
-	if( prev != NULL)
-	{
-		prev = curr->getPrev();
-		after = curr->getNext();
-		prev->setNext(after);
-	}
-	if( after != NULL)
-	{
-		after -> setPrev(prev);
-	}
-	
-	loc = prev;
+      prev->setNext(after);
+      after->setPrev(prev);
+
+   } else if (prev == NULL && after != NULL)
+   {
+
+      after->setPrev(prev);
+      loc = after;
+
+   } else if (after == NULL && prev != NULL)
+   {
+
+      prev->setNext(after);
+      loc = prev;
+
+   } else {
+
+      loc = NULL;
+
+   }
 	sze--;
    delete curr;
    return item;
